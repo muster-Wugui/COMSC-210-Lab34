@@ -14,7 +14,7 @@ using namespace std;
 
 class Graph {
 public:
-    int V; // I use V for vertices
+    int V; // I use V for vertices (now it stands for stations)
     vector<vector<pair<int, int>>> adj; // Creating adjacency list
 
     Graph(int vertices) {
@@ -29,34 +29,33 @@ public:
     }
 
     void displayGraph() { // Print the adjacency list to show the graph
-        cout << "Graph's adjacency list:\n";
+        cout << "Transportation Network:\n";
+        cout << "========================\n";
         for (int i = 0; i < V; i++) {
-            cout << i << " --> ";
+            cout << "Station " << i << " connects to: ";
             for (auto edge : adj[i]) {
-                cout << "(" << edge.first << ", " << edge.second << ") ";
+                cout << "Station " << edge.first << " (Distance: " << edge.second << " km) ";
             }
             cout << endl;
         }
     }
 
-
-
     void DFS(int start) { // A basic Depth-First Search using a stack
-        vector<bool> visited(V, false);  // Keep track of visited nodes
+        vector<bool> visited(V, false);  // Keep track of visited stations
         stack<int> s;
         s.push(start);
 
-        cout << "DFS starting from vertex " << start << ":\n";
+        cout << "DFS starting from Station " << start << ":\n";
         while (!s.empty()) {
-            int node = s.top();
+            int station = s.top();
             s.pop();
 
-            if (!visited[node]) { // Check if we haven't visited this node yet
-                cout << node << " ";
-                visited[node] = true; // Mark it as visited
+            if (!visited[station]) { // Check if we haven't visited this station yet
+                cout << "Station " << station << " ";
+                visited[station] = true; // Mark it as visited
             }
 
-            for (auto neighbor : adj[node]) { // Now we will push all unvisited neighbors to the stack
+            for (auto neighbor : adj[station]) { // Now we will push all unvisited neighbors to the stack
                 if (!visited[neighbor.first]) {
                     s.push(neighbor.first);
                 }
@@ -71,13 +70,13 @@ public:
         q.push(start);
         visited[start] = true;
 
-        cout << "BFS starting from vertex " << start << ":\n";
+        cout << "BFS starting from Station " << start << ":\n";
         while (!q.empty()) {
-            int node = q.front();
+            int station = q.front();
             q.pop();
-            cout << node << " ";
+            cout << "Station " << station << " ";
 
-            for (auto neighbor : adj[node]) {
+            for (auto neighbor : adj[station]) {
                 if (!visited[neighbor.first]) {
                     visited[neighbor.first] = true; // Mark them as visited
                     q.push(neighbor.first);
@@ -89,8 +88,10 @@ public:
 };
 
 int main() {
-    Graph g(9);
+    // Creating a graph representing a transportation network (stations 0 to 8)
+    Graph g(9); // I use 9 stations as an example
 
+    // Adding routes between stations (edges with distances in km)
     g.addEdge(0, 1, 8);
     g.addEdge(0, 2, 21);
     g.addEdge(1, 2, 6);
@@ -105,7 +106,10 @@ int main() {
     g.addEdge(6, 7, 3);
     g.addEdge(6, 8, 7);
 
+    // Display the transportation network's adjacency list
     g.displayGraph();
+
+    // Perform DFS and BFS starting from Station 0
     g.DFS(0);
     g.BFS(0);
 
