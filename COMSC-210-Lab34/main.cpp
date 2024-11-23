@@ -86,38 +86,35 @@ public:
         }
         cout << endl;
     }
-    void dijkstra(int start) {
-        vector<int> dist(V, INT_MAX); // Initialize distances to all stations as infinity
-        dist[start] = 0; // Distance to the starting station is 0
-        vector<bool> visited(V, false);
+    
+    void primMST() {
+        vector<int> key(V, INT_MAX); // Key values to pick minimum weight edge
+        vector<int> parent(V, -1); // Parent nodes in MST
+        vector<bool> inMST(V, false); // To check if a station is already included in MST
+        key[0] = 0;
         priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> pq; // Min-heap
-        pq.push({0, start});
+        pq.push({0, 0}); // Push starting station
 
-        cout << "\nShortest Paths from Station " << start << ":\n";
         while (!pq.empty()) {
             int u = pq.top().second;
             pq.pop();
-
-            if (visited[u]) continue;
-            visited[u] = true;
+            inMST[u] = true;
 
             for (auto& neighbor : adj[u]) {
                 int v = neighbor.first;
                 int weight = neighbor.second;
 
-                if (!visited[v] && dist[u] + weight < dist[v]) {
-                    dist[v] = dist[u] + weight;
-                    pq.push({dist[v], v});
+                if (!inMST[v] && weight < key[v]) {
+                    key[v] = weight;
+                    parent[v] = u;
+                    pq.push({key[v], v});
                 }
             }
         }
 
-        for (int i = 0; i < V; i++) {
-            if (dist[i] == INT_MAX) {
-                cout << "Station " << i << ": No path\n";
-            } else {
-                cout << "Station " << i << ": " << dist[i] << " km\n";
-            }
+        cout << "\nMinimum Spanning Tree edges with Distance:\n";
+        for (int i = 1; i < V; i++) {
+            cout << "Station " << parent[i] << " - Station " << i << ": " << key[i] << " km\n";
         }
     }
 };
@@ -141,6 +138,6 @@ int main() {
     g.addEdge(6, 7, 3);
     g.addEdge(6, 8, 7);
 
-    g.dijkstra(0); // Finding shortest paths from Station 0
+    g.primMST();
     return 0;
 }
