@@ -10,6 +10,7 @@
 #include <vector>
 #include <queue>
 #include <stack>
+#include <climits>
 using namespace std;
 
 class Graph {
@@ -85,6 +86,40 @@ public:
         }
         cout << endl;
     }
+    void dijkstra(int start) {
+        vector<int> dist(V, INT_MAX); // Initialize distances to all stations as infinity
+        dist[start] = 0; // Distance to the starting station is 0
+        vector<bool> visited(V, false);
+        priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> pq; // Min-heap
+        pq.push({0, start});
+
+        cout << "\nShortest Paths from Station " << start << ":\n";
+        while (!pq.empty()) {
+            int u = pq.top().second;
+            pq.pop();
+
+            if (visited[u]) continue;
+            visited[u] = true;
+
+            for (auto& neighbor : adj[u]) {
+                int v = neighbor.first;
+                int weight = neighbor.second;
+
+                if (!visited[v] && dist[u] + weight < dist[v]) {
+                    dist[v] = dist[u] + weight;
+                    pq.push({dist[v], v});
+                }
+            }
+        }
+
+        for (int i = 0; i < V; i++) {
+            if (dist[i] == INT_MAX) {
+                cout << "Station " << i << ": No path\n";
+            } else {
+                cout << "Station " << i << ": " << dist[i] << " km\n";
+            }
+        }
+    }
 };
 
 int main() {
@@ -106,12 +141,6 @@ int main() {
     g.addEdge(6, 7, 3);
     g.addEdge(6, 8, 7);
 
-    // Display the transportation network's adjacency list
-    g.displayGraph();
-
-    // Perform DFS and BFS starting from Station 0
-    g.DFS(0);
-    g.BFS(0);
-
+    g.dijkstra(0); // Finding shortest paths from Station 0
     return 0;
 }
