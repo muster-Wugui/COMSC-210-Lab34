@@ -117,12 +117,41 @@ public:
             cout << "Station " << parent[i] << " - Station " << i << ": " << key[i] << " km\n";
         }
     }
+    void dijkstra(int start) {
+           vector<int> dist(V, INT_MAX); // Initialize distances to all stations as infinity
+           dist[start] = 0; // Distance to the starting station is 0
+           vector<bool> visited(V, false);
+           priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> pq; // Min-heap
+           pq.push({0, start});
+           cout << "\nShortest Paths from Station " << start << ":\n";
+           while (!pq.empty()) {
+               int u = pq.top().second;
+               pq.pop();
+               if (visited[u]) continue;
+               visited[u] = true;
+               for (auto& neighbor : adj[u]) {
+                   int v = neighbor.first;
+                   int weight = neighbor.second;
+                   if (!visited[v] && dist[u] + weight < dist[v]) {
+                       dist[v] = dist[u] + weight;
+                       pq.push({dist[v], v});
+                   }
+               }
+           }
+           for (int i = 0; i < V; i++) {
+               if (dist[i] == INT_MAX) {
+                   cout << "Station " << i << ": No path\n";
+               } else {
+                   cout << "Station " << i << ": " << dist[i] << " km\n";
+               }
+           }
+       }
 };
 
 int main() {
     // Creating a graph representing a transportation network (stations 0 to 8)
     Graph g(9); // I use 9 stations as an example
-
+    
     // Adding routes between stations (edges with distances in km)
     g.addEdge(0, 1, 8);
     g.addEdge(0, 2, 21);
@@ -137,7 +166,40 @@ int main() {
     g.addEdge(5, 8, 5);
     g.addEdge(6, 7, 3);
     g.addEdge(6, 8, 7);
-
-    g.primMST();
+    
+    int choice;
+    do {
+        cout << "\nTransportation Network Menu:\n";
+        cout << "[1] Display transportation network\n";
+        cout << "[2] Analyze network (BFS)\n";
+        cout << "[3] Plan route (DFS)\n";
+        cout << "[4] Calculate shortest paths\n";
+        cout << "[5] Find Minimum Spanning Tree\n";
+        cout << "[0] Exit\n";
+        cout << "Enter your choice: ";
+        cin >> choice;
+        
+        switch (choice) {
+            case 1:
+                g.displayGraph();
+                break;
+            case 2:
+                g.BFS(0);
+                break;
+            case 3:
+                g.DFS(0);
+                break;
+            case 4:
+                g.dijkstra(0);
+                break;
+            case 5:
+                g.primMST();
+                break;
+            case 0:
+                cout << "Exiting...\n";
+                break;
+        }
+    } while (choice != 0);
+    
     return 0;
 }
